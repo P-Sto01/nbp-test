@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Rates</title>
+    <link rel="icon" href="{{ url_for('static', filename='icon.ico') }}" type="image/x-icon">
+    <style>
+        /* General page styling */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* General table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Table header styling */
+        thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        /* Alternating row colors */
+        tbody tr:nth-child(even) {
+            background-color: #f3f3f3;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        /* Hover effect */
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        /* Cell padding and borders */
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #dddddd;
+        }
+
+        /* Responsive table */
+        @media screen and (max-width: 600px) {
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Style for the dropdown menu */
+        #sort-options {
+            width: 200px;
+            height: 40px;
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Currency Rates</h1>
+    <label for="sort-options">Sort by:</label>
+    <select id="sort-options" onchange="sortTable()">
+        <option value="rate-up">Rate ↑</option>
+        <option value="rate-down">Rate ↓</option>
+        <option value="difference-up">Difference ↑</option>
+        <option value="difference-down">Difference ↓</option>
+    </select>
+    <table id="currency-table">
+        <thead>
+            <tr>
+                <th>Currency Code</th>
+                <th>Current Rate</th>
+                <th>Difference (10 days ago)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rate in rates %}
+            <tr>
+                <td>{{ rate.code }}</td>
+                <td>{{ rate.current_rate }}</td>
+                <td>{{ rate.difference if rate.difference is not none else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        function sortTable() {
+            const table = document.getElementById("currency-table");
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            const sortOption = document.getElementById("sort-options").value;
+
+            rows.sort((a, b) => {
+                const rateA = parseFloat(a.cells[1].textContent) || 0; // Ensure numeric value
+                const rateB = parseFloat(b.cells[1].textContent) || 0;
+                const diffA = parseFloat(a.cells[2].textContent) || 0; // Ensure numeric value
+                const diffB = parseFloat(b.cells[2].textContent) || 0;
+
+                switch (sortOption) {
+                    case "rate-up":
+                        return rateA - rateB;
+                    case "rate-down":
+                        return rateB - rateA;
+                    case "difference-up":
+                        return diffA - diffB;
+                    case "difference-down":
+                        return diffB - diffA;
+                    default:
+                        return 0;
+                }
+            });
+
+            // Re-append sorted rows to the table body
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
+</body>
+</html>
