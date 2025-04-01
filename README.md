@@ -72,6 +72,6 @@ This project is a Flask-based web application that displays current currency rat
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-##Credits
+## Credits
 
 This was made to test for Claude 3.5 Sonnet's ability to generate simple python application.
